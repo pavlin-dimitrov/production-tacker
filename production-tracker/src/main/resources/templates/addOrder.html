@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Order</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="container mt-5">
+    <h2>Create New Order</h2>
+    <form th:action="@{/saveOrder}" th:object="${order}" method="post">
+        <div class="form-group">
+            <label for="orderNumber">Order Number</label>
+            <input type="text" id="orderNumber" name="orderNumber" th:field="*{orderNumber}" class="form-control" placeholder="Enter Order Number">
+        </div>
+
+        <div class="form-group">
+            <label for="details">Details</label>
+            <input type="text" id="details" name="details" th:field="*{details}" class="form-control" placeholder="Enter Details">
+        </div>
+
+        <div class="form-group">
+            <label for="comment">Comment</label>
+            <textarea id="comment" name="comment" th:field="*{comment}" class="form-control" placeholder="Enter Comment"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Order and Proceed to Add Items</button>
+    </form>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</body>
+</html>

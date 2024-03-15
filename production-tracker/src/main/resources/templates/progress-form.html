@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Edit Progress: ' + ${orderItem.orderNum.orderNumber} + ' - ' + ${orderItem.type}">Edit
+        Progress</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<div class="container mt-5">
+    <h1 th:text="${orderItem.orderNum.orderNumber} + ' - ' + ${orderItem.type}">Order Number - Item Type</h1>
+    <h2 th:text="${orderItem.orderNum.details}">Order Details</h2>
+    <h3 th:text="${orderItem.orderNum.comment}">Order Comment</h3>
+
+    <div th:if="${successMessage}" class="alert alert-success" th:text="#{${successMessage}}"></div>
+
+    <form th:action="@{/update-saveProgress/{itemId}(itemId=${orderItem.id})}" th:object="${progress}" method="post">
+        <input type="hidden" id="itemId" th:value="${orderItem.id}">
+        <div class="form-group">
+            <label for="operation">Operation</label>
+            <select id="operation" class="form-control" th:field="*{operation}">
+                <option th:each="op : ${operations}" th:value="${op}" th:text="${op}" th:selected="${op == 'Select Operation...'}"></option>
+            </select>
+
+        </div>
+        <div class="form-group">
+            <label for="completedFrames">Completed Frames</label>
+            <input type="number" id="completedFrames" class="form-control" th:field="*{completedFrames}">
+            <small id="framesInfo" class="form-text text-muted">Info about completed frames</small>
+        </div>
+        <div class="form-group">
+            <label for="completedSashes">Completed Sashes</label>
+            <input type="number" id="completedSashes" class="form-control" th:field="*{completedSashes}">
+            <small id="sashesInfo" class="form-text text-muted">Info about completed sashes</small>
+        </div>
+        <button type="submit" class="btn btn-primary" id="saveButton" disabled>Save Progress</button>
+    </form>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function updateProgressInfo() {
+        var operation = $('#operation').val();
+        var itemId = $('#itemId').val();
+
+        $.ajax({
+            url: '/getProgressInfo',
+            type: 'GET',
+            data: {
+                'operation': operation,
+                'itemId': itemId
+            },
+            success: function(response) {
+                $('#framesInfo').text("Completed frames: " + response.completedFrames);
+                $('#sashesInfo').text("Completed sashes: " + response.completedSashes);
+                validateForm();
+            },
+            error: function(error) {
+                console.log("Error updating progress info: ", error);
+            }
+        });
+    }
+
+    function validateForm() {
+        var operation = $('#operation').val();
+        var completedFrames = $('#completedFrames').val();
+        var completedSashes = $('#completedSashes').val();
+        // Проверява дали е избрана стойност различна от 'Select Operation...'
+        var isOperationSelected = operation && operation !== '';
+
+        // Допълнителна проверка, която изисква операцията да не бъде 'Select Operation...'
+        var isOperationValid = $('#operation option:selected').text().trim() !== 'Select Operation...';
+
+        var isAnyQuantityPositive = (completedFrames > 0 || completedSashes > 0);
+
+        $('#saveButton').prop('disabled', !(isOperationSelected && isAnyQuantityPositive && isOperationValid));
+    }
+
+    $(document).ready(function() {
+        validateForm();
+
+        $('#operation, #completedFrames, #completedSashes').change(function() {
+            updateProgressInfo();
+            validateForm();
+        });
+    });
+</script>
+</body>
+</html>

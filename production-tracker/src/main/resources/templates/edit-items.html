@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Items</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>Edit Items for Order: <span th:text="${orderNum.orderNumber}"></span></h2>
+    <form th:action="@{/updateItems/{orderId}(orderId=${orderNum.id})}" th:object="${form}" method="post">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Item Type</th>
+                <th>Quantity</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item, iterStat : *{items}">
+                <td th:text="${item.type}"></td>
+                <td><input type="hidden" th:field="*{items[__${iterStat.index}__].id}"/></td>
+                <td><input type="number" th:field="*{items[__${iterStat.index}__].quantity}" class="form-control"/></td>
+                <td>
+                    <a th:href="@{/deleteItem/{orderId}/{itemId}(orderId=${orderNum.id}, itemId=${item.id})}"
+                       class="btn btn-danger">Изтрий</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div>
+            <button type="submit" class="btn btn-primary">Update Items</button>
+            <a th:href="@{/addItems(orderId=${orderNum.id})}" class="btn btn-success">Add Items</a>
+        </div>
+
+    </form>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</body>
+</html>

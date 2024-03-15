@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Element Types</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+
+<div class="container mt-5">
+    <h1 th:text="'Прогрес за поръчка № ' + ${orderNum.orderNumber}"></h1>
+    <h2 th:text="${orderNum.details}">Order Details</h2>
+    <h3 th:text="${orderNum.comment}">Order Comment</h3>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <table class="table table-borderless">
+                <tbody>
+                <tr th:each="item : ${orderNum.items}">
+                    <td class="text-center">
+                        <!-- Вашият URL трябва да сочи към маршрут, който обработва редактирането на прогреса за конкретния елемент -->
+                        <a th:href="@{/edit-progress/{itemId}(itemId=${item.id})}" class="btn btn-large btn-outline-primary" th:text="${item.type}">Елемент</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Order</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="container mt-5">
+  <h2>Edit Order</h2>
+  <form th:action="@{/updateOrder/{id}(id=${orderNum.id})}" th:object="${orderNum}" method="post">
+    <div class="form-group">
+      <label for="orderNumber">Order Number</label>
+      <input type="text" id="orderNumber" th:field="*{orderNumber}" class="form-control" placeholder="Enter Order Number">
+    </div>
+    <div class="form-group">
+      <label for="details">Details</label>
+      <input type="text" id="details" th:field="*{details}" class="form-control" placeholder="Enter Details">
+    </div>
+    <div class="form-group">
+      <label for="comment">Comment</label>
+      <textarea id="comment" th:field="*{comment}" class="form-control" placeholder="Enter Comment"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Order</button>
+  </form>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</body>
+</html>

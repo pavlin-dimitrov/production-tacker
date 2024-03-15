@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Items to Order</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="container mt-5">
+    <h2>Add Items to Order</h2>
+    <form th:action="@{/addItems}" method="post">
+        <input type="hidden" name="orderId" th:value="${orderId}">
+        <div id="itemsContainer">
+            <div class="item mb-3">
+                <div class="form-group">
+                    <label>Item Type</label>
+                    <select name="type" class="form-control">
+                        <option th:each="type : ${T(com.example.productiontracker.entity.ItemType).values()}" th:value="${type}" th:text="${type}" th:unless="${addedItems.contains(type.toString())}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" name="quantity" class="form-control" placeholder="Enter Quantity">
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Save Items</button>
+            <button type="button" id="finishOrderBtn" class="btn btn-danger">FINISH ORDER</button>
+        </div>
+        <div th:if="${message}" class="alert alert-info" role="alert">
+            <p th:text="${message}"></p>
+        </div>
+
+    </form>
+</div>
+<script>
+    document.getElementById('finishOrderBtn').addEventListener('click', function() {
+        fetch('/finishOrder') // Извикване на метода finishOrder чрез AJAX заявка
+            .then(function(response) {
+                // Проверка дали заявката е успешна
+                if (response.ok) {
+                    window.location.href = '/'; // Редиректване към началната страница
+                } else {
+                    alert('Нещо се обърка!');
+                }
+            });
+    });
+</script>
+</body>
+</html>
