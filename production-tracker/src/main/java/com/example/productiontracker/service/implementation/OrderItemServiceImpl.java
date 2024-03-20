@@ -1,6 +1,7 @@
 package com.example.productiontracker.service.implementation;
 
 import com.example.productiontracker.dto.OrderItemDto;
+import com.example.productiontracker.entity.OperationType;
 import com.example.productiontracker.entity.OrderNum;
 import com.example.productiontracker.exception.OrderNotFoundException;
 import com.example.productiontracker.repository.OrderRepository;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.productiontracker.repository.OrderItemRepository;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,16 +40,16 @@ public class OrderItemServiceImpl implements OrderItemService {
         return orderItemRepository.findAll();
     }
     @Override
-    public OrderItem updateOrderItem(Long id, OrderItem orderItemDetails) {
+    public void updateOrderItem(Long id, OrderItem orderItemDetails) {
         OrderItem orderItem = orderItemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("OrderItem not found with id " + id));
         orderItem.setType(orderItemDetails.getType());
         orderItem.setQuantity(orderItemDetails.getQuantity());
         orderItem.setFrames(orderItemDetails.getFrames());
         orderItem.setSashes(orderItemDetails.getSashes());
-        // Set other fields that you wish to update
-        return orderItemRepository.save(orderItem);
+        orderItemRepository.save(orderItem);
     }
+
     @Override
     @Transactional
     public void addOrderItemToOrder(Long orderId, OrderItemDto orderItemDto) throws OrderNotFoundException {
@@ -60,7 +63,6 @@ public class OrderItemServiceImpl implements OrderItemService {
         orderItem.setFrames(orderItemDto.getFrames());
         orderItem.setSashes(orderItemDto.getSashes());
 
-
         orderItem.setOrderNum(order);
         order.getItems().add(orderItem);
         orderItemRepository.save(orderItem);
@@ -73,5 +75,15 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Override
     public List<OrderItem> getOrderItemsByOrderId(Long orderId) {
         return orderItemRepository.findByOrderNumId(orderId);
+    }
+
+    @Override
+    public List<String> getAllOperations() {
+        List<String> operations = new ArrayList<>();
+        operations.add("Select Operation...");
+        operations.addAll(Arrays.stream(OperationType.values())
+                .map(Enum::name)
+                .toList());
+        return operations;
     }
 }

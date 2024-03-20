@@ -13,6 +13,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static jakarta.persistence.TemporalType.TIMESTAMP;
@@ -30,16 +31,16 @@ public abstract class Auditable<T> {
 
     @CreatedDate
     @Temporal(TIMESTAMP)
-    protected Date createdAt;
+    protected LocalDateTime createdAt;
 
     @LastModifiedBy
     protected T lastModifiedBy;
 
     @LastModifiedDate
     @Temporal(TIMESTAMP)
-    protected Date lastModifiedAt;
+    protected LocalDateTime lastModifiedAt;
 
-    public Auditable(Date createdAt, T createdBy, T lastModifiedBy, Date lastModifiedAt) {
+    public Auditable(LocalDateTime createdAt, T createdBy, T lastModifiedBy, LocalDateTime lastModifiedAt) {
         this.createdAt = createdAt;
         this.createdBy = createdBy;
         this.lastModifiedBy = lastModifiedBy;

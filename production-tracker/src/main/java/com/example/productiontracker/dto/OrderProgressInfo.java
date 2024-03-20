@@ -6,13 +6,20 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@Setter
+import java.time.LocalDateTime;
+
 @Getter
+@Setter
 @RequiredArgsConstructor
-public class ProductionProgressDto {
+public class OrderProgressInfo {
     private String orderNumber;
-    private ItemType itemType;
-    private OperationType operation;
+    private String details;
+    private String comment;
+    private ItemType type;
+    private String lastModifiedBy;
+    private LocalDateTime lastModifiedAt;
     private int completedFrames;
     private int completedSashes;
+    private OperationType operation;
 }
+

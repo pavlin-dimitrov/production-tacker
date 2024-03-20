@@ -25,7 +25,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = new Account();
         account.setUsername(registrationDto.getUsername());
         account.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-        // Можете да добавите и други полета от DTO към Account тук
+
         return accountRepository.save(account);
     }
 }

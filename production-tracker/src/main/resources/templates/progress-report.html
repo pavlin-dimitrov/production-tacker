@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Production Progress Report</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .wide-columns {
+            width: 25%;
+        }
+        .narrow-columns {
+            width: 5%;
+        }
+        .average-columns {
+            width: 15%;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-3">
+    <h2>Production Progress Report</h2>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th class="narrow-columns">Order</th>
+            <th class="wide-columns">Details</th>
+            <th class="wide-columns">Comments</th>
+            <th class="narrow-columns">Item Type</th>
+            <th class="narrow-columns">User</th>
+            <th class="average-columns">Date</th>
+            <th class="narrow-columns">Frames</th>
+            <th class="narrow-columns">Sashes</th>
+            <th class="narrow-columns">Operation</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${reportData.content}">
+            <td th:text="${item.orderNumber}"></td>
+            <td th:text="${item.details}"></td>
+            <td th:text="${item.comment}"></td>
+            <td th:text="${item.type}"></td>
+            <td th:text="${item.lastModifiedBy}"></td>
+            <td th:text="${#temporals.format(item.lastModifiedAt, 'dd/MM/yyyy HH:mm')}"></td>
+            <td th:text="${item.completedFrames}"></td>
+            <td th:text="${item.completedSashes}"></td>
+            <td th:text="${item.operation}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <!-- Pagination controls -->
+    <div>
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${reportData.first} ? 'disabled' : ''">
+                <a class="page-link" th:href="@{/report(page=${reportData.number - 1}, size=${reportData.size})}"
+                   aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, reportData.totalPages - 1)}"
+                th:classappend="${pageNum == reportData.number} ? 'active' : ''">
+                <a class="page-link" th:text="${pageNum + 1}"
+                   th:href="@{/report(page=${pageNum}, size=${reportData.size})}"></a>
+            </li>
+            <li class="page-item" th:classappend="${reportData.last} ? 'disabled' : ''">
+                <a class="page-link" th:href="@{/report(page=${reportData.number + 1}, size=${reportData.size})}"
+                   aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div>
+        <a href="/filter" class="btn btn-primary">Back to Filter</a>
+        <a th:href="@{/export/excel(orderNumber=${filterCriteria.orderNumber},
+        details=${filterCriteria.details},
+        lastModifiedBy=${filterCriteria.lastModifiedBy},
+        startDate=${filterCriteria.startDate},
+        endDate=${filterCriteria.endDate})}" class="btn btn-success">Export to Excel</a>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

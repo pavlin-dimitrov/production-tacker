@@ -11,7 +11,6 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class OrderItemsFormDto {
-    // Getters and setters
-    private List<OrderItem> items;
 
+    private List<OrderItem> items;
 }

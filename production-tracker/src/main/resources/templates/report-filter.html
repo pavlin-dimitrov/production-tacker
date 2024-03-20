@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Report Filter</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div class="container mt-3">
+    <h2>Filter Report</h2>
+    <form action="#" th:action="@{/report}" th:object="${filterCriteria}" method="get">
+        <div>
+            <label for="orderNumber">Order Number:</label>
+            <input type="text" class="form-control" id="orderNumber" th:field="*{orderNumber}"/>
+        </div>
+        <div>
+            <label for="details">Details:</label>
+            <input type="text" class="form-control" id="details" th:field="*{details}"/>
+        </div>
+        <div>
+            <label for="lastModifiedBy">Last Modified By:</label>
+            <input type="text" class="form-control" id="lastModifiedBy" th:field="*{lastModifiedBy}"/>
+        </div>
+        <div>
+            <label for="startDate">Start Date:</label>
+            <input type="datetime-local" class="form-control" id="startDate" th:field="*{startDate}"/>
+        </div>
+        <div>
+            <label for="endDate">End Date:</label>
+            <input type="datetime-local" class="form-control" id="endDate" th:field="*{endDate}"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Generate Report</button>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

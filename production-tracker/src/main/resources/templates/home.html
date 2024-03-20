@@ -49,6 +49,21 @@
         </tr>
         </tbody>
     </table>
+    <!-- Pagination Controls -->
+    <div>
+        <ul class="pagination">
+            <li class="page-item" th:if="${orderNums.hasPrevious()}">
+                <a class="page-link" th:href="@{'/?page=' + (${orderNums.number} - 1) + '&size=' + ${orderNums.size}}">Previous</a>
+            </li>
+            <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, orderNums.totalPages - 1)}" th:classappend="${pageNum == orderNums.number} ? 'active' : ''">
+                <a class="page-link" th:href="@{'/?page=' + ${pageNum} + '&size=' + ${orderNums.size}}" th:text="${pageNum + 1}">1</a>
+            </li>
+            <li class="page-item" th:if="${orderNums.hasNext()}">
+                <a class="page-link" th:href="@{'/?page=' + (${orderNums.number} + 1) + '&size=' + ${orderNums.size}}">Next</a>
+            </li>
+        </ul>
+    </div>
+
 
     <a th:href="@{/createOrder}" class="btn btn-success">Добави Поръчка</a>
 </div>

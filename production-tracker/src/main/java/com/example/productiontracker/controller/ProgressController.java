@@ -1,25 +1,28 @@
 package com.example.productiontracker.controller;
 
-import com.example.productiontracker.dto.OrderProgressDto;
+import com.example.productiontracker.dto.FilterCriteria;
+import com.example.productiontracker.dto.OrderProgressInfo;
 import com.example.productiontracker.dto.ProductionProgressDto;
 import com.example.productiontracker.entity.OperationType;
 import com.example.productiontracker.entity.OrderItem;
 import com.example.productiontracker.entity.ProductionProgress;
 import com.example.productiontracker.service.contract.OrderItemService;
 import com.example.productiontracker.service.contract.ProductionProgressService;
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -32,25 +35,17 @@ public class ProgressController {
 
     @GetMapping("/edit-progress/{itemId}")
     public String showProgressForm(@PathVariable Long itemId, Model model) {
-        OrderItem orderItem = orderItemService.getOrderItemById(itemId)
-                .orElseThrow(() -> new RuntimeException("OrderItem not found with id " + itemId));
-
-        List<String> operations = new ArrayList<>();
-        operations.add("Select Operation..."); // Първа стойност в списъка
-        operations.addAll(Arrays.stream(OperationType.values())
-                .map(Enum::name)
-                .collect(Collectors.toList()));
-
-        model.addAttribute("orderItem", orderItem);
-        model.addAttribute("operations", operations);
+        model.addAttribute("orderItem", orderItemService.getOrderItemById(itemId));
+        model.addAttribute("operations", orderItemService.getAllOperations());
         model.addAttribute("progress", new ProductionProgress());
         return "progress-form";
     }
 
-
     @PostMapping("/update-saveProgress/{itemId}")
-    public String saveItemProgress(@PathVariable Long itemId, @ModelAttribute ProductionProgress progress,
-                                   Model model, RedirectAttributes redirectAttributes) {
+    public String saveItemProgress(@PathVariable Long itemId,
+                                   @ModelAttribute ProductionProgress progress,
+                                   RedirectAttributes redirectAttributes) {
+
         OrderItem orderItem = orderItemService.getOrderItemById(itemId)
                 .orElseThrow(() -> new RuntimeException("OrderItem not found with id " + itemId));
 
@@ -64,30 +59,51 @@ public class ProgressController {
         productionProgressService.updateProductionProgress(progressDto);
 
         redirectAttributes.addFlashAttribute("successMessage", "progress.saved");
-        return "redirect:/edit-progress/" + itemId; // Пренасочва обратно към страницата за редактиране на прогреса
+        return "redirect:/edit-progress/" + itemId;
     }
 
     @GetMapping("/getProgressInfo")
     @ResponseBody
-    public ResponseEntity<?> getProgressInfo(@RequestParam("operation") OperationType operation, @RequestParam("itemId") Long itemId) {
-        // Намиране на артикула по itemId
-        OrderItem orderItem = orderItemService.getOrderItemById(itemId)
-                .orElseThrow(() -> new RuntimeException("OrderItem not found with id " + itemId));
-
-        // Филтриране на прогреса на артикула по зададената операция
-        List<ProductionProgress> progressList = orderItem.getProgress().stream()
-                .filter(progress -> progress.getOperation().equals(operation))
-                .collect(Collectors.toList());
-
-        // Изчисляване на сумата от завършените рамки и крила за избраната операция
-        int totalCompletedFrames = progressList.stream().mapToInt(ProductionProgress::getCompletedFrames).sum();
-        int totalCompletedSashes = progressList.stream().mapToInt(ProductionProgress::getCompletedSashes).sum();
-
-        Map<String, Integer> progressInfo = new HashMap<>();
-        progressInfo.put("completedFrames", totalCompletedFrames);
-        progressInfo.put("completedSashes", totalCompletedSashes);
-
-        return ResponseEntity.ok(progressInfo);
+    public ResponseEntity<?> getProgressInfo(@RequestParam("operation") OperationType operation,
+                                             @RequestParam("itemId") Long itemId) {
+        return ResponseEntity.ok(productionProgressService.getProgressInfo(operation, itemId));
     }
 
+    @GetMapping("/filter")
+    public String showFilterForm(Model model) {
+        model.addAttribute("filterCriteria", new FilterCriteria());
+        return "report-filter";
+    }
+
+    @GetMapping("/report")
+    public String showReport(@ModelAttribute("filterCriteria") FilterCriteria filterCriteria,
+                             @RequestParam(defaultValue = "0") int page,
+                             @RequestParam(defaultValue = "100") int size,
+                             Model model) {
+        Page<OrderProgressInfo> reportData = productionProgressService.getFilteredProgress(
+                filterCriteria.getOrderNumber(), filterCriteria.getDetails(),
+                filterCriteria.getLastModifiedBy(), filterCriteria.getStartDate(),
+                filterCriteria.getEndDate(), page, size
+        );
+        model.addAttribute("reportData", reportData);
+        return "progress-report";
+    }
+
+    @GetMapping("/export/excel")
+    public void exportToExcel(HttpServletResponse response,
+                              @ModelAttribute("filterCriteria") FilterCriteria filterCriteria) throws IOException {
+        ByteArrayInputStream stream = productionProgressService.exportReportToExcel(
+                filterCriteria.getOrderNumber(),
+                filterCriteria.getDetails(),
+                filterCriteria.getLastModifiedBy(),
+                filterCriteria.getStartDate(),
+                filterCriteria.getEndDate());
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=" +
+                productionProgressService.createReportName(filterCriteria));
+
+        FileCopyUtils.copy(stream, response.getOutputStream());
+        response.flushBuffer();
+    }
 }

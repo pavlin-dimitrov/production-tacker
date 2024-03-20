@@ -8,8 +8,6 @@
 <body>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-
-
 <div class="container mt-5">
     <h1 th:text="'Прогрес за поръчка № ' + ${orderNum.orderNumber}"></h1>
     <h2 th:text="${orderNum.details}">Order Details</h2>
@@ -21,8 +19,8 @@
                 <tbody>
                 <tr th:each="item : ${orderNum.items}">
                     <td class="text-center">
-                        <!-- Вашият URL трябва да сочи към маршрут, който обработва редактирането на прогреса за конкретния елемент -->
-                        <a th:href="@{/edit-progress/{itemId}(itemId=${item.id})}" class="btn btn-large btn-outline-primary" th:text="${item.type}">Елемент</a>
+                        <a th:href="@{/edit-progress/{itemId}(itemId=${item.id})}"
+                           class="btn btn-large btn-outline-primary" th:text="${item.type}">Елемент</a>
                     </td>
                 </tr>
                 </tbody>
