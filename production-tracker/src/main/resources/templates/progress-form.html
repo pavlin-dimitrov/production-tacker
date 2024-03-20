@@ -23,7 +23,8 @@
         <div class="form-group">
             <label for="operation">Operation</label>
             <select id="operation" class="form-control" th:field="*{operation}">
-                <option th:each="op : ${operations}" th:value="${op}" th:text="${op}" th:selected="${op == 'Select Operation...'}"></option>
+                <option th:each="op : ${operations}" th:value="${op}" th:text="${op}"
+                        th:selected="${op == 'Select Operation...'}"></option>
             </select>
         </div>
         <div class="form-group">

@@ -24,50 +24,49 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrderControllerApi {
 
-    @Autowired
-    private final OrderService orderService;
-    @Autowired
-    private final OrderItemService orderItemService;
+  @Autowired private final OrderService orderService;
+  @Autowired private final OrderItemService orderItemService;
 
-    @PostMapping
-    public ResponseEntity<OrderNum> createOrder(@RequestBody OrderNum orderNum) {
-        OrderNum newOrderNum = orderService.createOrder(orderNum);
-        return new ResponseEntity<>(newOrderNum, HttpStatus.CREATED);
+  @PostMapping
+  public ResponseEntity<OrderNum> createOrder(@RequestBody OrderNum orderNum) {
+    OrderNum newOrderNum = orderService.createOrder(orderNum);
+    return new ResponseEntity<>(newOrderNum, HttpStatus.CREATED);
+  }
+
+  @PostMapping("/{orderId}/items")
+  public void addItemToOrder(@PathVariable Long orderId, @RequestBody OrderItemDto orderItemDto) {
+    orderItemService.addOrderItemToOrder(orderId, orderItemDto);
+  }
+
+  @GetMapping("/{orderId}")
+  public ResponseEntity<OrderDetailsDto> getOrderDetails(@PathVariable Long orderId) {
+    Optional<OrderNum> orderNumOptional = orderService.getOrderById(orderId);
+    if (!orderNumOptional.isPresent()) {
+      return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/{orderId}/items")
-    public void addItemToOrder(@PathVariable Long orderId, @RequestBody OrderItemDto orderItemDto) {
-        orderItemService.addOrderItemToOrder(orderId, orderItemDto);
-    }
+    OrderNum orderNum = orderNumOptional.get();
+    List<OrderItem> orderItems = orderItemService.getOrderItemsByOrderId(orderId);
 
-    @GetMapping("/{orderId}")
-    public ResponseEntity<OrderDetailsDto> getOrderDetails(@PathVariable Long orderId) {
-        Optional<OrderNum> orderNumOptional = orderService.getOrderById(orderId);
-        if (!orderNumOptional.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
+    OrderDetailsDto orderDetailsDto = new OrderDetailsDto();
+    orderDetailsDto.setOrderNumber(orderNum.getOrderNumber());
+    orderDetailsDto.setDetails(orderNum.getDetails());
 
-        OrderNum orderNum = orderNumOptional.get();
-        List<OrderItem> orderItems = orderItemService.getOrderItemsByOrderId(orderId);
-
-        OrderDetailsDto orderDetailsDto = new OrderDetailsDto();
-        orderDetailsDto.setOrderNumber(orderNum.getOrderNumber());
-        orderDetailsDto.setDetails(orderNum.getDetails());
-
-        // Aggregate the details for each item type
-        Map<ItemType, ItemDetailDto> itemCounts = orderItems.stream()
-                .collect(Collectors.groupingBy(OrderItem::getType, Collectors.collectingAndThen(
+    Map<ItemType, ItemDetailDto> itemCounts =
+        orderItems.stream()
+            .collect(
+                Collectors.groupingBy(
+                    OrderItem::getType,
+                    Collectors.collectingAndThen(
                         Collectors.toList(),
                         items -> {
-                            int totalQuantity = items.stream().mapToInt(OrderItem::getQuantity).sum();
-                            int totalFrames = items.stream().mapToInt(OrderItem::getFrames).sum();
-                            int totalSashes = items.stream().mapToInt(OrderItem::getSashes).sum();
-                            return new ItemDetailDto(totalQuantity, totalFrames, totalSashes);
-                        }
-                )));
-        orderDetailsDto.setItemCounts(itemCounts);
+                          int totalQuantity = items.stream().mapToInt(OrderItem::getQuantity).sum();
+                          int totalFrames = items.stream().mapToInt(OrderItem::getFrames).sum();
+                          int totalSashes = items.stream().mapToInt(OrderItem::getSashes).sum();
+                          return new ItemDetailDto(totalQuantity, totalFrames, totalSashes);
+                        })));
+    orderDetailsDto.setItemCounts(itemCounts);
 
-
-        return ResponseEntity.ok(orderDetailsDto);
-    }
+    return ResponseEntity.ok(orderDetailsDto);
+  }
 }

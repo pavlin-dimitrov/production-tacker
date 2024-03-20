@@ -13,17 +13,17 @@ import java.io.Serializable;
 @Setter
 @RequiredArgsConstructor
 public class ProductionProgress extends Auditable<String> implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private OperationType operation; // Define OperationType as an enum with the operations
+  @Enumerated(EnumType.STRING)
+  private OperationType operation;
 
-    private int completedFrames; // Number of completed frames
-    private int completedSashes; // Number of completed sashes
+  private int completedFrames;
+  private int completedSashes;
 
-    @ManyToOne
-    @JoinColumn(name = "order_item_id")
-    private OrderItem orderItem;
+  @ManyToOne
+  @JoinColumn(name = "order_item_id")
+  private OrderItem orderItem;
 }

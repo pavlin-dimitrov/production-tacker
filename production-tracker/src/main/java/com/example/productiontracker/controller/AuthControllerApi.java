@@ -15,12 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthControllerApi {
 
-    @Autowired
-    private AccountService accountService;
+  @Autowired private AccountService accountService;
 
-    @PostMapping("/register")
-    public ResponseEntity<Account> registerAccount(@RequestBody RegistrationDto registrationDto) {
-        Account registeredAccount = accountService.registerNewAccount(registrationDto);
-        return new ResponseEntity<>(registeredAccount, HttpStatus.CREATED);
-    }
+  @PostMapping("/register")
+  public ResponseEntity<Account> registerAccount(@RequestBody RegistrationDto registrationDto) {
+    Account registeredAccount = accountService.registerNewAccount(registrationDto);
+    return new ResponseEntity<>(registeredAccount, HttpStatus.CREATED);
+  }
 }

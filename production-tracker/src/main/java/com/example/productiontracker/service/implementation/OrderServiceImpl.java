@@ -18,37 +18,38 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
-    private final OrderRepository orderRepository;
+  @Autowired private final OrderRepository orderRepository;
 
-    @Override
-    public Page<OrderNum> findAllOrderNum(String search, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return orderRepository.searchByOrderNumberOrDetailsOrComment(search, pageable);
-    }
+  @Override
+  public Page<OrderNum> findAllOrderNum(String search, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    return orderRepository.searchByOrderNumberOrDetailsOrComment(search, pageable);
+  }
 
-    @Override
-    public OrderNum createOrder(OrderNum orderNum) {
-        return orderRepository.save(orderNum);
-    }
+  @Override
+  public OrderNum createOrder(OrderNum orderNum) {
+    return orderRepository.save(orderNum);
+  }
 
-    @Override
-    public Optional<OrderNum> getOrderById(Long id) {
-        return orderRepository.findById(id);
-    }
+  @Override
+  public Optional<OrderNum> getOrderById(Long id) {
+    return orderRepository.findById(id);
+  }
 
-    @Override
-    public void updateOrder(Long id, OrderNum orderNumDetails) {
-        OrderNum orderNum = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found with id " + id));
-        orderNum.setOrderNumber(orderNumDetails.getOrderNumber());
-        orderNum.setDetails(orderNumDetails.getDetails());
-        orderNum.setComment(orderNumDetails.getComment());
-        orderRepository.save(orderNum);
-    }
+  @Override
+  public void updateOrder(Long id, OrderNum orderNumDetails) {
+    OrderNum orderNum =
+        orderRepository
+            .findById(id)
+            .orElseThrow(() -> new RuntimeException("Order not found with id " + id));
+    orderNum.setOrderNumber(orderNumDetails.getOrderNumber());
+    orderNum.setDetails(orderNumDetails.getDetails());
+    orderNum.setComment(orderNumDetails.getComment());
+    orderRepository.save(orderNum);
+  }
 
-    @Override
-    public void deleteOrder(Long id) {
-        orderRepository.deleteById(id);
-    }
+  @Override
+  public void deleteOrder(Long id) {
+    orderRepository.deleteById(id);
+  }
 }

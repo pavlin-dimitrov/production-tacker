@@ -22,68 +22,70 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class OrderItemServiceImpl implements OrderItemService {
-    @Autowired
-    private final OrderItemRepository orderItemRepository;
-    @Autowired
-    private final OrderRepository orderRepository;
-    @Override
-    public OrderItem createOrderItem(OrderItem orderItem) {
-        return orderItemRepository.save(orderItem);
-    }
-    @Override
-    public Optional<OrderItem> getOrderItemById(Long id) {
-        return orderItemRepository.findById(id);
-    }
+  @Autowired private final OrderItemRepository orderItemRepository;
+  @Autowired private final OrderRepository orderRepository;
 
-    @Override
-    public List<OrderItem> getAllOrderItems() {
-        return orderItemRepository.findAll();
-    }
-    @Override
-    public void updateOrderItem(Long id, OrderItem orderItemDetails) {
-        OrderItem orderItem = orderItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("OrderItem not found with id " + id));
-        orderItem.setType(orderItemDetails.getType());
-        orderItem.setQuantity(orderItemDetails.getQuantity());
-        orderItem.setFrames(orderItemDetails.getFrames());
-        orderItem.setSashes(orderItemDetails.getSashes());
-        orderItemRepository.save(orderItem);
-    }
+  @Override
+  public OrderItem createOrderItem(OrderItem orderItem) {
+    return orderItemRepository.save(orderItem);
+  }
 
-    @Override
-    @Transactional
-    public void addOrderItemToOrder(Long orderId, OrderItemDto orderItemDto) throws OrderNotFoundException {
-        OrderNum order = orderRepository.findById(orderId)
-                .orElseThrow(OrderNotFoundException::new);
+  @Override
+  public Optional<OrderItem> getOrderItemById(Long id) {
+    return orderItemRepository.findById(id);
+  }
 
-        OrderItem orderItem = new OrderItem();
+  @Override
+  public List<OrderItem> getAllOrderItems() {
+    return orderItemRepository.findAll();
+  }
 
-        orderItem.setType(orderItemDto.getType());
-        orderItem.setQuantity(orderItemDto.getQuantity());
-        orderItem.setFrames(orderItemDto.getFrames());
-        orderItem.setSashes(orderItemDto.getSashes());
+  @Override
+  public void updateOrderItem(Long id, OrderItem orderItemDetails) {
+    OrderItem orderItem =
+        orderItemRepository
+            .findById(id)
+            .orElseThrow(() -> new RuntimeException("OrderItem not found with id " + id));
+    orderItem.setType(orderItemDetails.getType());
+    orderItem.setQuantity(orderItemDetails.getQuantity());
+    orderItem.setFrames(orderItemDetails.getFrames());
+    orderItem.setSashes(orderItemDetails.getSashes());
+    orderItemRepository.save(orderItem);
+  }
 
-        orderItem.setOrderNum(order);
-        order.getItems().add(orderItem);
-        orderItemRepository.save(orderItem);
-    }
-    @Override
-    public void deleteOrderItem(Long id) {
-        orderItemRepository.deleteById(id);
-    }
+  @Override
+  @Transactional
+  public void addOrderItemToOrder(Long orderId, OrderItemDto orderItemDto)
+      throws OrderNotFoundException {
+    OrderNum order = orderRepository.findById(orderId).orElseThrow(OrderNotFoundException::new);
 
-    @Override
-    public List<OrderItem> getOrderItemsByOrderId(Long orderId) {
-        return orderItemRepository.findByOrderNumId(orderId);
-    }
+    OrderItem orderItem = new OrderItem();
 
-    @Override
-    public List<String> getAllOperations() {
-        List<String> operations = new ArrayList<>();
-        operations.add("Select Operation...");
-        operations.addAll(Arrays.stream(OperationType.values())
-                .map(Enum::name)
-                .toList());
-        return operations;
-    }
+    orderItem.setType(orderItemDto.getType());
+    orderItem.setQuantity(orderItemDto.getQuantity());
+    orderItem.setFrames(orderItemDto.getFrames());
+    orderItem.setSashes(orderItemDto.getSashes());
+
+    orderItem.setOrderNum(order);
+    order.getItems().add(orderItem);
+    orderItemRepository.save(orderItem);
+  }
+
+  @Override
+  public void deleteOrderItem(Long id) {
+    orderItemRepository.deleteById(id);
+  }
+
+  @Override
+  public List<OrderItem> getOrderItemsByOrderId(Long orderId) {
+    return orderItemRepository.findByOrderNumId(orderId);
+  }
+
+  @Override
+  public List<String> getAllOperations() {
+    List<String> operations = new ArrayList<>();
+    operations.add("Select Operation...");
+    operations.addAll(Arrays.stream(OperationType.values()).map(Enum::name).toList());
+    return operations;
+  }
 }

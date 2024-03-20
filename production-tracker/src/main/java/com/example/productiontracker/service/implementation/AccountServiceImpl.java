@@ -10,22 +10,20 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountServiceImpl implements AccountService {
-    @Autowired
-    private AccountRepository accountRepository;
+  @Autowired private AccountRepository accountRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+  @Autowired private PasswordEncoder passwordEncoder;
 
-    @Override
-    public Account registerNewAccount(RegistrationDto registrationDto) {
-        if(accountRepository.findAccountByUsername(registrationDto.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
-        }
-
-        Account account = new Account();
-        account.setUsername(registrationDto.getUsername());
-        account.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-
-        return accountRepository.save(account);
+  @Override
+  public Account registerNewAccount(RegistrationDto registrationDto) {
+    if (accountRepository.findAccountByUsername(registrationDto.getUsername()).isPresent()) {
+      throw new RuntimeException("Username already exists");
     }
+
+    Account account = new Account();
+    account.setUsername(registrationDto.getUsername());
+    account.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+
+    return accountRepository.save(account);
+  }
 }

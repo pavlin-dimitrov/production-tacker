@@ -26,97 +26,76 @@ import java.util.stream.Collectors;
 @Controller
 public class OrderController {
 
-    @Autowired
-    private OrderService orderService;
-    @Autowired
-    private OrderItemService orderItemService;
+  @Autowired private OrderService orderService;
+  @Autowired private OrderItemService orderItemService;
 
-    @GetMapping("/createOrder")
-    public String showCreateOrderForm(Model model) {
-        model.addAttribute("order", new OrderNum());
-        return "addOrder"; // Името на HTML файла за създаване на поръчка
+  @GetMapping("/createOrder")
+  public String showCreateOrderForm(Model model) {
+    model.addAttribute("order", new OrderNum());
+    return "addOrder";
+  }
+
+  @PostMapping("/saveOrder")
+  public String saveOrder(
+      @ModelAttribute OrderNum orderNum, RedirectAttributes redirectAttributes) {
+    OrderNum savedOrder = orderService.createOrder(orderNum);
+    redirectAttributes.addAttribute("orderId", savedOrder.getId());
+    return "redirect:/addItems";
+  }
+
+  @GetMapping("/addItems")
+  public String showAddItemsForm(@RequestParam("orderId") Long orderId, Model model) {
+    List<OrderItem> existingItems = orderItemService.getOrderItemsByOrderId(orderId);
+    Set<String> addedItemTypes =
+        existingItems.stream().map(item -> item.getType().toString()).collect(Collectors.toSet());
+
+    model.addAttribute("addedItems", addedItemTypes);
+    model.addAttribute("orderId", orderId);
+    model.addAttribute("orderItem", new OrderItem());
+
+    if (addedItemTypes.size() == ItemType.values().length) {
+      model.addAttribute("message", "All items have been added. Please click 'FINISH ORDER'.");
     }
 
-    @PostMapping("/saveOrder")
-    public String saveOrder(@ModelAttribute OrderNum orderNum,
-                            RedirectAttributes redirectAttributes) {
-        OrderNum savedOrder = orderService.createOrder(orderNum);
-        redirectAttributes.addAttribute("orderId", savedOrder.getId());
-        return "redirect:/addItems"; // Предаване на ID на поръчката към страницата за добавяне на артикули
+    return "addItems";
+  }
+
+  @PostMapping("/addItems")
+  public String addItemsToOrder(
+      @RequestParam("orderId") Long orderId,
+      @ModelAttribute OrderItem orderItem,
+      RedirectAttributes redirectAttributes,
+      HttpSession session) {
+
+    if (orderItem.getType() != null && orderItem.getQuantity() != null) {
+      Set<String> addedItems = (Set<String>) session.getAttribute("addedItems");
+      if (addedItems == null) {
+        addedItems = new HashSet<>();
+      }
+
+      OrderItemDto orderItemDto = new OrderItemDto();
+      orderItemDto.setType(orderItem.getType());
+      orderItemDto.setQuantity(orderItem.getQuantity());
+      orderItemDto.setFrames(orderItem.getFrames());
+      orderItemDto.setSashes(orderItem.getSashes());
+
+      try {
+        orderItemService.addOrderItemToOrder(orderId, orderItemDto);
+        addedItems.add(orderItem.getType().toString());
+      } catch (OrderNotFoundException e) {
+        e.printStackTrace();
+      }
+
+      session.setAttribute("addedItems", addedItems);
     }
 
-    @GetMapping("/addItems")
-    public String showAddItemsForm(@RequestParam("orderId") Long orderId, Model model) {
-        // Извличане на вече добавените артикули за тази поръчка
-        List<OrderItem> existingItems = orderItemService.getOrderItemsByOrderId(orderId);
-        Set<String> addedItemTypes = existingItems.stream().map(item -> item.getType().toString()).collect(Collectors.toSet());
+    redirectAttributes.addAttribute("orderId", orderId);
+    return "redirect:/addItems?orderId=" + orderId;
+  }
 
-        model.addAttribute("addedItems", addedItemTypes); // Актуализиран списък с вече добавени типове артикули
-        model.addAttribute("orderId", orderId);
-        model.addAttribute("orderItem", new OrderItem());
-
-        if (addedItemTypes.size() == ItemType.values().length) {
-            model.addAttribute("message", "All items have been added. Please click 'FINISH ORDER'.");
-        }
-
-        return "addItems";
-    }
-//    @GetMapping("/addItems")
-//    public String showAddItemsForm(@RequestParam("orderId") Long orderId,
-//                                   Model model,
-//                                   HttpSession session) {
-//        Set<String> addedItems = (Set<String>) session.getAttribute("addedItems");
-//        if (addedItems == null) {
-//            addedItems = new HashSet<>();
-//            session.setAttribute("addedItems", addedItems);
-//        }
-//
-//        if (addedItems.size() == ItemType.values().length) {
-//            model.addAttribute("message", "All items have been added. Please click 'FINISH ORDER'.");
-//        }
-//
-//        model.addAttribute("addedItems", addedItems);
-//        model.addAttribute("orderId", orderId);
-//        model.addAttribute("orderItem", new OrderItem());
-//        return "addItems";
-//    }
-
-    @PostMapping("/addItems")
-    public String addItemsToOrder(@RequestParam("orderId") Long orderId,
-                                  @ModelAttribute OrderItem orderItem,
-                                  RedirectAttributes redirectAttributes,
-                                  HttpSession session) {
-        // Добавяне на проверка за null
-        if (orderItem.getType() != null && orderItem.getQuantity() != null) {
-            Set<String> addedItems = (Set<String>) session.getAttribute("addedItems");
-            if (addedItems == null) {
-                addedItems = new HashSet<>();
-            }
-
-            OrderItemDto orderItemDto = new OrderItemDto();
-            orderItemDto.setType(orderItem.getType());
-            orderItemDto.setQuantity(orderItem.getQuantity());
-            orderItemDto.setFrames(orderItem.getFrames());
-            orderItemDto.setSashes(orderItem.getSashes());
-
-            try {
-                orderItemService.addOrderItemToOrder(orderId, orderItemDto);
-                addedItems.add(orderItem.getType().toString());
-            } catch (OrderNotFoundException e) {
-                e.printStackTrace();
-                // Обработка на грешката, например показване на съобщение за грешка
-            }
-
-            session.setAttribute("addedItems", addedItems);
-        }
-
-        redirectAttributes.addAttribute("orderId", orderId);
-        return "redirect:/addItems?orderId=" + orderId;
-    }
-
-    @GetMapping("/finishOrder")
-    public String finishOrder(HttpSession session) {
-        session.removeAttribute("addedItems"); // Изчистване на атрибута addedItems от сесията
-        return "redirect:/"; // Редиректване към началната страница или където желаете
-    }
+  @GetMapping("/finishOrder")
+  public String finishOrder(HttpSession session) {
+    session.removeAttribute("addedItems");
+    return "redirect:/";
+  }
 }

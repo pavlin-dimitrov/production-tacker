@@ -12,5 +12,5 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderItemsFormDto {
 
-    private List<OrderItem> items;
+  private List<OrderItem> items;
 }

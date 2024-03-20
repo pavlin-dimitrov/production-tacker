@@ -11,15 +11,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class OrderItemTypeController {
 
-    @Autowired
-    private OrderService orderService;
+  @Autowired private OrderService orderService;
 
-    @GetMapping("/progress/{id}")
-    public String orderItemTypes(@PathVariable Long id, Model model) {
-        OrderNum orderNum = orderService.getOrderById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found with id " + id));
+  @GetMapping("/progress/{id}")
+  public String orderItemTypes(@PathVariable Long id, Model model) {
+    OrderNum orderNum =
+        orderService
+            .getOrderById(id)
+            .orElseThrow(() -> new RuntimeException("Order not found with id " + id));
 
-        model.addAttribute("orderNum", orderNum);
-        return "orderItemTypes";
-    }
+    model.addAttribute("orderNum", orderNum);
+    return "orderItemTypes";
+  }
 }

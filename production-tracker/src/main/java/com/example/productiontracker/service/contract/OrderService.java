@@ -9,9 +9,13 @@ import java.util.Optional;
 @Service
 public interface OrderService {
 
-    Page<OrderNum> findAllOrderNum(String search, int page, int size);
-    OrderNum createOrder(OrderNum orderNum);
-    Optional<OrderNum> getOrderById(Long id);
-    void updateOrder(Long id, OrderNum orderNumDetails);
-    void deleteOrder(Long id);
+  Page<OrderNum> findAllOrderNum(String search, int page, int size);
+
+  OrderNum createOrder(OrderNum orderNum);
+
+  Optional<OrderNum> getOrderById(Long id);
+
+  void updateOrder(Long id, OrderNum orderNumDetails);
+
+  void deleteOrder(Long id);
 }

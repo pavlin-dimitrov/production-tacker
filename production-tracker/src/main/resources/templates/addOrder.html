@@ -12,17 +12,20 @@
     <form th:action="@{/saveOrder}" th:object="${order}" method="post">
         <div class="form-group">
             <label for="orderNumber">Order Number</label>
-            <input type="text" id="orderNumber" name="orderNumber" th:field="*{orderNumber}" class="form-control" placeholder="Enter Order Number">
+            <input type="text" id="orderNumber" name="orderNumber" th:field="*{orderNumber}" class="form-control"
+                   placeholder="Enter Order Number">
         </div>
 
         <div class="form-group">
             <label for="details">Details</label>
-            <input type="text" id="details" name="details" th:field="*{details}" class="form-control" placeholder="Enter Details">
+            <input type="text" id="details" name="details" th:field="*{details}" class="form-control"
+                   placeholder="Enter Details">
         </div>
 
         <div class="form-group">
             <label for="comment">Comment</label>
-            <textarea id="comment" name="comment" th:field="*{comment}" class="form-control" placeholder="Enter Comment"></textarea>
+            <textarea id="comment" name="comment" th:field="*{comment}" class="form-control"
+                      placeholder="Enter Comment"></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">Save Order and Proceed to Add Items</button>

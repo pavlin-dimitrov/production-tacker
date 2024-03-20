@@ -14,24 +14,25 @@ import java.util.Map;
 
 @Service
 public interface ProductionProgressService {
-    void updateProductionProgress(ProductionProgressDto progressDto);
+  void updateProductionProgress(ProductionProgressDto progressDto);
 
-    Page<OrderProgressInfo> getFilteredProgress(String orderNumber,
-                                                String details,
-                                                String lastModifiedBy,
-                                                LocalDateTime startDate,
-                                                LocalDateTime endDate,
-                                                int page,
-                                                int size);
+  Page<OrderProgressInfo> getFilteredProgress(
+      String orderNumber,
+      String details,
+      String lastModifiedBy,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      int page,
+      int size);
 
-    ByteArrayInputStream exportReportToExcel(String orderNumber,
-                                             String details,
-                                             String lastModifiedBy,
-                                             LocalDateTime startDate,
-                                             LocalDateTime endDate);
+  ByteArrayInputStream exportReportToExcel(
+      String orderNumber,
+      String details,
+      String lastModifiedBy,
+      LocalDateTime startDate,
+      LocalDateTime endDate);
 
-    String createReportName(FilterCriteria filterCriteria);
+  String createReportName(FilterCriteria filterCriteria);
 
-    Map<String, Integer> getProgressInfo(OperationType operation, Long itemId);
-
+  Map<String, Integer> getProgressInfo(OperationType operation, Long itemId);
 }

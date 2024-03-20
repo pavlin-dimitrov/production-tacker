@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @AllArgsConstructor
 public class ItemDetailDto {
-    private int quantity;
-    private int frames;
-    private int sashes;
+  private int quantity;
+  private int frames;
+  private int sashes;
 }

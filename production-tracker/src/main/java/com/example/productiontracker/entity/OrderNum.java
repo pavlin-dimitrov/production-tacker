@@ -15,14 +15,14 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class OrderNum extends Auditable<String> implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String orderNumber;
-    private String details;
-    private String comment;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @OneToMany(mappedBy = "orderNum", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> items = new ArrayList<>();
+  private String orderNumber;
+  private String details;
+  private String comment;
+
+  @OneToMany(mappedBy = "orderNum", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<OrderItem> items = new ArrayList<>();
 }
-

@@ -37,147 +37,170 @@ import java.util.Map;
 @Transactional
 public class ProductionProgressServiceImpl implements ProductionProgressService {
 
-    @Autowired
-    private OrderRepository orderNumRepository;
-    @Autowired
-    private OrderItemService orderItemService;
-    @Autowired
-    private ProductionProgressRepository productionProgressRepository;
+  @Autowired private OrderRepository orderNumRepository;
+  @Autowired private OrderItemService orderItemService;
+  @Autowired private ProductionProgressRepository productionProgressRepository;
 
-    @Override
-    public void updateProductionProgress(ProductionProgressDto progressDto) {
-        OrderNum orderNum = orderNumRepository.findByOrderNumber(progressDto.getOrderNumber())
-                .orElseThrow(() -> new EntityNotFoundException("Order not found with number: " + progressDto.getOrderNumber()));
+  @Override
+  public void updateProductionProgress(ProductionProgressDto progressDto) {
+    OrderNum orderNum =
+        orderNumRepository
+            .findByOrderNumber(progressDto.getOrderNumber())
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        "Order not found with number: " + progressDto.getOrderNumber()));
 
-        OrderItem orderItem = orderNum.getItems().stream()
-                .filter(item -> item.getType() == progressDto.getItemType())
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Item not found with type: " + progressDto.getItemType()));
+    OrderItem orderItem =
+        orderNum.getItems().stream()
+            .filter(item -> item.getType() == progressDto.getItemType())
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException(
+                        "Item not found with type: " + progressDto.getItemType()));
 
-        ProductionProgress progress = new ProductionProgress();
-        progress.setOperation(progressDto.getOperation());
-        progress.setCompletedFrames(progressDto.getCompletedFrames());
-        progress.setCompletedSashes(progressDto.getCompletedSashes());
-        progress.setOrderItem(orderItem);
+    ProductionProgress progress = new ProductionProgress();
+    progress.setOperation(progressDto.getOperation());
+    progress.setCompletedFrames(progressDto.getCompletedFrames());
+    progress.setCompletedSashes(progressDto.getCompletedSashes());
+    progress.setOrderItem(orderItem);
 
-        productionProgressRepository.save(progress);
+    productionProgressRepository.save(progress);
+  }
+
+  public Page<OrderProgressInfo> getFilteredProgress(
+      String orderNumber,
+      String details,
+      String lastModifiedBy,
+      LocalDateTime startDate,
+      LocalDateTime endDate,
+      int page,
+      int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<ProductionProgress> progressPage =
+        productionProgressRepository.findFilteredProgress(
+            orderNumber, details, lastModifiedBy, startDate, endDate, pageable);
+    return progressPage.map(this::convertToDto);
+  }
+
+  private OrderProgressInfo convertToDto(ProductionProgress progress) {
+    OrderProgressInfo dto = new OrderProgressInfo();
+
+    OrderItem orderItem = progress.getOrderItem();
+    OrderNum orderNum = orderItem.getOrderNum();
+
+    dto.setOrderNumber(orderNum.getOrderNumber());
+    dto.setDetails(orderNum.getDetails());
+    dto.setComment(orderNum.getComment());
+    dto.setType(orderItem.getType());
+    dto.setLastModifiedBy(progress.getLastModifiedBy());
+    dto.setLastModifiedAt(progress.getLastModifiedAt());
+    dto.setCompletedFrames(progress.getCompletedFrames());
+    dto.setCompletedSashes(progress.getCompletedSashes());
+    dto.setOperation(progress.getOperation());
+    return dto;
+  }
+
+  public ByteArrayInputStream exportReportToExcel(
+      String orderNumber,
+      String details,
+      String lastModifiedBy,
+      LocalDateTime startDate,
+      LocalDateTime endDate) {
+    List<ProductionProgress> reportData =
+        productionProgressRepository.findFilteredProgressForExcel(
+            orderNumber, details, lastModifiedBy, startDate, endDate);
+
+    try (Workbook workbook = new XSSFWorkbook();
+        ByteArrayOutputStream out = new ByteArrayOutputStream(); ) {
+      Sheet sheet = getRows(workbook);
+      int rowIdx = 1;
+      for (ProductionProgress progress : reportData) {
+        rowIdx = getRowIdx(progress, sheet, rowIdx);
+      }
+      workbook.write(out);
+      return new ByteArrayInputStream(out.toByteArray());
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to export data to Excel file: " + e.getMessage());
     }
+  }
 
-    public Page<OrderProgressInfo> getFilteredProgress(String orderNumber, String details, String lastModifiedBy,
-                                                       LocalDateTime startDate, LocalDateTime endDate, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ProductionProgress> progressPage = productionProgressRepository.findFilteredProgress(orderNumber,
-                details, lastModifiedBy, startDate, endDate, pageable);
-        return progressPage.map(this::convertToDto);
-    }
+  private static int getRowIdx(ProductionProgress progress, Sheet sheet, int rowIdx) {
+    Row row = sheet.createRow(rowIdx++);
 
-    private OrderProgressInfo convertToDto(ProductionProgress progress) {
-        OrderProgressInfo dto = new OrderProgressInfo();
+    OrderItem orderItem = progress.getOrderItem();
+    OrderNum orderNum = orderItem.getOrderNum();
 
-        OrderItem orderItem = progress.getOrderItem();
-        OrderNum orderNum = orderItem.getOrderNum();
+    row.createCell(0).setCellValue(orderNum.getOrderNumber());
+    row.createCell(1).setCellValue(orderNum.getDetails());
+    row.createCell(2).setCellValue(orderNum.getComment());
+    row.createCell(3).setCellValue(orderItem.getType().name());
+    row.createCell(4).setCellValue(progress.getLastModifiedBy());
+    row.createCell(5).setCellValue(progress.getLastModifiedAt());
+    row.createCell(5).setCellValue(progress.getCompletedFrames());
+    row.createCell(6).setCellValue(progress.getCompletedSashes());
+    row.createCell(7).setCellValue(progress.getOperation().name());
+    return rowIdx;
+  }
 
-        dto.setOrderNumber(orderNum.getOrderNumber());
-        dto.setDetails(orderNum.getDetails());
-        dto.setComment(orderNum.getComment());
-        dto.setType(orderItem.getType());
-        dto.setLastModifiedBy(progress.getLastModifiedBy());
-        dto.setLastModifiedAt(progress.getLastModifiedAt());
-        dto.setCompletedFrames(progress.getCompletedFrames());
-        dto.setCompletedSashes(progress.getCompletedSashes());
-        dto.setOperation(progress.getOperation());
-        return dto;
-    }
+  @NotNull
+  private static Sheet getRows(Workbook workbook) {
+    Sheet sheet = workbook.createSheet("Report");
+    Row headerRow = sheet.createRow(0);
+    headerRow.createCell(0).setCellValue("Order Number");
+    headerRow.createCell(1).setCellValue("Details");
+    headerRow.createCell(2).setCellValue("Comments");
+    headerRow.createCell(3).setCellValue("Item Type");
+    headerRow.createCell(4).setCellValue("User");
+    headerRow.createCell(5).setCellValue("Date");
+    headerRow.createCell(6).setCellValue("Frames");
+    headerRow.createCell(7).setCellValue("Sashes");
+    headerRow.createCell(8).setCellValue("Operation");
+    return sheet;
+  }
 
-    public ByteArrayInputStream exportReportToExcel(String orderNumber, String details, String lastModifiedBy,
-                                                    LocalDateTime startDate, LocalDateTime endDate) {
-        List<ProductionProgress> reportData = productionProgressRepository.findFilteredProgressForExcel(
-                orderNumber, details, lastModifiedBy, startDate, endDate
-        );
+  @Override
+  public String createReportName(FilterCriteria filterCriteria) {
 
-        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
-            Sheet sheet = getRows(workbook);
-            int rowIdx = 1;
-            for (ProductionProgress progress : reportData) {
-                rowIdx = getRowIdx(progress, sheet, rowIdx);
-            }
-            workbook.write(out);
-            return new ByteArrayInputStream(out.toByteArray());
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to export data to Excel file: " + e.getMessage());
-        }
-    }
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    String formattedStartDate = filterCriteria.getStartDate().format(formatter);
+    String formattedEndDate = filterCriteria.getEndDate().format(formatter);
 
-    private static int getRowIdx(ProductionProgress progress, Sheet sheet, int rowIdx) {
-        Row row = sheet.createRow(rowIdx++);
+    return "Report - "
+        + filterCriteria.getOrderNumber()
+        + " - "
+        + filterCriteria.getDetails()
+        + " - "
+        + filterCriteria.getLastModifiedBy()
+        + " - "
+        + formattedStartDate
+        + " - "
+        + formattedEndDate
+        + ".xlsx";
+  }
 
-        OrderItem orderItem = progress.getOrderItem();
-        OrderNum orderNum = orderItem.getOrderNum();
+  public Map<String, Integer> getProgressInfo(OperationType operation, Long itemId) {
 
-        row.createCell(0).setCellValue(orderNum.getOrderNumber());
-        row.createCell(1).setCellValue(orderNum.getDetails());
-        row.createCell(2).setCellValue(orderNum.getComment());
-        row.createCell(3).setCellValue(orderItem.getType().name());
-        row.createCell(4).setCellValue(progress.getLastModifiedBy());
-        row.createCell(5).setCellValue(progress.getLastModifiedAt());
-        row.createCell(5).setCellValue(progress.getCompletedFrames());
-        row.createCell(6).setCellValue(progress.getCompletedSashes());
-        row.createCell(7).setCellValue(progress.getOperation().name());
-        return rowIdx;
-    }
+    OrderItem orderItem =
+        orderItemService
+            .getOrderItemById(itemId)
+            .orElseThrow(() -> new RuntimeException("OrderItem not found with id " + itemId));
 
-    @NotNull
-    private static Sheet getRows(Workbook workbook) {
-        Sheet sheet = workbook.createSheet("Report");
-        Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("Order Number");
-        headerRow.createCell(1).setCellValue("Details");
-        headerRow.createCell(2).setCellValue("Comments");
-        headerRow.createCell(3).setCellValue("Item Type");
-        headerRow.createCell(4).setCellValue("User");
-        headerRow.createCell(5).setCellValue("Date");
-        headerRow.createCell(6).setCellValue("Frames");
-        headerRow.createCell(7).setCellValue("Sashes");
-        headerRow.createCell(8).setCellValue("Operation");
-        return sheet;
-    }
+    List<ProductionProgress> progressList =
+        orderItem.getProgress().stream()
+            .filter(progress -> progress.getOperation().equals(operation))
+            .toList();
 
-    @Override
-    public String createReportName(FilterCriteria filterCriteria){
+    int totalCompletedFrames =
+        progressList.stream().mapToInt(ProductionProgress::getCompletedFrames).sum();
+    int totalCompletedSashes =
+        progressList.stream().mapToInt(ProductionProgress::getCompletedSashes).sum();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        String formattedStartDate = filterCriteria.getStartDate().format(formatter);
-        String formattedEndDate = filterCriteria.getEndDate().format(formatter);
+    Map<String, Integer> progressInfo = new HashMap<>();
+    progressInfo.put("completedFrames", totalCompletedFrames);
+    progressInfo.put("completedSashes", totalCompletedSashes);
 
-        return "Report - " +filterCriteria.getOrderNumber()
-                + " - "
-                + filterCriteria.getDetails()
-                + " - "
-                + filterCriteria.getLastModifiedBy()
-                + " - "
-                + formattedStartDate
-                + " - "
-                + formattedEndDate
-                + ".xlsx";
-    }
-
-   public Map<String, Integer> getProgressInfo(OperationType operation, Long itemId) {
-
-        OrderItem orderItem = orderItemService.getOrderItemById(itemId)
-                .orElseThrow(() -> new RuntimeException("OrderItem not found with id " + itemId));
-
-        List<ProductionProgress> progressList = orderItem.getProgress().stream()
-                .filter(progress -> progress.getOperation().equals(operation))
-                .toList();
-
-        int totalCompletedFrames = progressList.stream().mapToInt(ProductionProgress::getCompletedFrames).sum();
-        int totalCompletedSashes = progressList.stream().mapToInt(ProductionProgress::getCompletedSashes).sum();
-
-        Map<String, Integer> progressInfo = new HashMap<>();
-        progressInfo.put("completedFrames", totalCompletedFrames);
-        progressInfo.put("completedSashes", totalCompletedSashes);
-
-        return progressInfo;
-    }
-
+    return progressInfo;
+  }
 }

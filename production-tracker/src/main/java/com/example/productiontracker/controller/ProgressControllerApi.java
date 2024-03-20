@@ -10,15 +10,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/progress")
 public class ProgressControllerApi {
 
-    private final ProductionProgressService productionProgressService;
+  private final ProductionProgressService productionProgressService;
 
-    @Autowired
-    public ProgressControllerApi(ProductionProgressService productionProgressService) {
-        this.productionProgressService = productionProgressService;
-    }
-    @PostMapping("/update")
-    public ResponseEntity<Void> updateProgress(@RequestBody ProductionProgressDto progressDto) {
-        productionProgressService.updateProductionProgress(progressDto);
-        return ResponseEntity.ok().build();
-    }
+  @Autowired
+  public ProgressControllerApi(ProductionProgressService productionProgressService) {
+    this.productionProgressService = productionProgressService;
+  }
+
+  @PostMapping("/update")
+  public ResponseEntity<Void> updateProgress(@RequestBody ProductionProgressDto progressDto) {
+    productionProgressService.updateProductionProgress(progressDto);
+    return ResponseEntity.ok().build();
+  }
 }

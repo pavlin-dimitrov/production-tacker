@@ -26,24 +26,23 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Auditable<T> {
 
-    @CreatedBy
-    protected T createdBy;
+  @CreatedBy protected T createdBy;
 
-    @CreatedDate
-    @Temporal(TIMESTAMP)
-    protected LocalDateTime createdAt;
+  @CreatedDate
+  @Temporal(TIMESTAMP)
+  protected LocalDateTime createdAt;
 
-    @LastModifiedBy
-    protected T lastModifiedBy;
+  @LastModifiedBy protected T lastModifiedBy;
 
-    @LastModifiedDate
-    @Temporal(TIMESTAMP)
-    protected LocalDateTime lastModifiedAt;
+  @LastModifiedDate
+  @Temporal(TIMESTAMP)
+  protected LocalDateTime lastModifiedAt;
 
-    public Auditable(LocalDateTime createdAt, T createdBy, T lastModifiedBy, LocalDateTime lastModifiedAt) {
-        this.createdAt = createdAt;
-        this.createdBy = createdBy;
-        this.lastModifiedBy = lastModifiedBy;
-        this.lastModifiedAt = lastModifiedAt;
-    }
+  public Auditable(
+      LocalDateTime createdAt, T createdBy, T lastModifiedBy, LocalDateTime lastModifiedAt) {
+    this.createdAt = createdAt;
+    this.createdBy = createdBy;
+    this.lastModifiedBy = lastModifiedBy;
+    this.lastModifiedAt = lastModifiedAt;
+  }
 }

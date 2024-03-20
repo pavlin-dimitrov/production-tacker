@@ -15,21 +15,25 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<OrderNum, Long> {
-    Optional<OrderNum> findByOrderNumber(String orderNumber);
+  Optional<OrderNum> findByOrderNumber(String orderNumber);
 
-    List<OrderNum> findByOrderNumberContainingIgnoreCase(String search);
+  List<OrderNum> findByOrderNumberContainingIgnoreCase(String search);
 
-    @Query("SELECT o FROM OrderNum o WHERE " +
-            "(:orderNumber IS NULL OR o.orderNumber LIKE %:orderNumber%) AND " +
-            "(:details IS NULL OR o.details LIKE %:details%) AND " +
-            "(:comment IS NULL OR o.comment LIKE %:comment%)")
-    List<OrderNum> findByOrderNumberOrDetailsOrComment(@Param("orderNumber") String orderNumber,
-                                                       @Param("details") String details,
-                                                       @Param("comment") String comment);
+  @Query(
+      "SELECT o FROM OrderNum o WHERE "
+          + "(:orderNumber IS NULL OR o.orderNumber LIKE %:orderNumber%) AND "
+          + "(:details IS NULL OR o.details LIKE %:details%) AND "
+          + "(:comment IS NULL OR o.comment LIKE %:comment%)")
+  List<OrderNum> findByOrderNumberOrDetailsOrComment(
+      @Param("orderNumber") String orderNumber,
+      @Param("details") String details,
+      @Param("comment") String comment);
 
-    @Query("SELECT o FROM OrderNum o WHERE " +
-            "(:search IS NULL OR LOWER(o.orderNumber) LIKE LOWER(CONCAT('%', :search, '%'))) OR " +
-            "(:search IS NULL OR LOWER(o.details) LIKE LOWER(CONCAT('%', :search, '%'))) OR " +
-            "(:search IS NULL OR LOWER(o.comment) LIKE LOWER(CONCAT('%', :search, '%')))")
-    Page<OrderNum> searchByOrderNumberOrDetailsOrComment(@Param("search") String search, Pageable pageable);
+  @Query(
+      "SELECT o FROM OrderNum o WHERE "
+          + "(:search IS NULL OR LOWER(o.orderNumber) LIKE LOWER(CONCAT('%', :search, '%'))) OR "
+          + "(:search IS NULL OR LOWER(o.details) LIKE LOWER(CONCAT('%', :search, '%'))) OR "
+          + "(:search IS NULL OR LOWER(o.comment) LIKE LOWER(CONCAT('%', :search, '%')))")
+  Page<OrderNum> searchByOrderNumberOrDetailsOrComment(
+      @Param("search") String search, Pageable pageable);
 }

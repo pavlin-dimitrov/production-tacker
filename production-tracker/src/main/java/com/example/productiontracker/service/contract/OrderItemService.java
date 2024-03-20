@@ -9,12 +9,19 @@ import java.util.Optional;
 
 @Service
 public interface OrderItemService {
-    OrderItem createOrderItem(OrderItem orderItem);
-    Optional<OrderItem> getOrderItemById(Long id);
-    List<OrderItem> getAllOrderItems();
-    void updateOrderItem(Long id, OrderItem orderItemDetails);
-    void deleteOrderItem(Long id);
-    void addOrderItemToOrder(Long orderId, OrderItemDto orderItemDto);
-    List<OrderItem> getOrderItemsByOrderId(Long orderId);
-    List<String> getAllOperations();
+  OrderItem createOrderItem(OrderItem orderItem);
+
+  Optional<OrderItem> getOrderItemById(Long id);
+
+  List<OrderItem> getAllOrderItems();
+
+  void updateOrderItem(Long id, OrderItem orderItemDetails);
+
+  void deleteOrderItem(Long id);
+
+  void addOrderItemToOrder(Long orderId, OrderItemDto orderItemDto);
+
+  List<OrderItem> getOrderItemsByOrderId(Long orderId);
+
+  List<String> getAllOperations();
 }

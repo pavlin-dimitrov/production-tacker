@@ -10,9 +10,8 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class OrderItemDto {
 
-    private ItemType type;
-    private Integer quantity;
-    private Integer frames;
-    private Integer sashes;
+  private ItemType type;
+  private Integer quantity;
+  private Integer frames;
+  private Integer sashes;
 }
-

@@ -10,9 +10,9 @@ import lombok.Setter;
 @Getter
 @RequiredArgsConstructor
 public class ProductionProgressDto {
-    private String orderNumber;
-    private ItemType itemType;
-    private OperationType operation;
-    private int completedFrames;
-    private int completedSashes;
+  private String orderNumber;
+  private ItemType itemType;
+  private OperationType operation;
+  private int completedFrames;
+  private int completedSashes;
 }

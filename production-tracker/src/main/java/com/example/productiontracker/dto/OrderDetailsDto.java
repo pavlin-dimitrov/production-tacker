@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Data
 public class OrderDetailsDto {
-    private String orderNumber;
-    private String details;
-    private Map<ItemType, ItemDetailDto> itemCounts;
+  private String orderNumber;
+  private String details;
+  private Map<ItemType, ItemDetailDto> itemCounts;
 }

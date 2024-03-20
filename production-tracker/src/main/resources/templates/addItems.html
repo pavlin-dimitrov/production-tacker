@@ -17,7 +17,9 @@
                 <div class="form-group">
                     <label>Item Type</label>
                     <select name="type" class="form-control">
-                        <option th:each="type : ${T(com.example.productiontracker.entity.ItemType).values()}" th:value="${type}" th:text="${type}" th:unless="${addedItems.contains(type.toString())}"></option>
+                        <option th:each="type : ${T(com.example.productiontracker.entity.ItemType).values()}"
+                                th:value="${type}" th:text="${type}"
+                                th:unless="${addedItems.contains(type.toString())}"></option>
                     </select>
                 </div>
                 <div class="form-group">
