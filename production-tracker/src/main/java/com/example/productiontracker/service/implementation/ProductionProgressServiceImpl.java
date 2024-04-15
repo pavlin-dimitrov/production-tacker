@@ -138,9 +138,9 @@ public class ProductionProgressServiceImpl implements ProductionProgressService 
     row.createCell(3).setCellValue(orderItem.getType().name());
     row.createCell(4).setCellValue(progress.getLastModifiedBy());
     row.createCell(5).setCellValue(progress.getLastModifiedAt());
-    row.createCell(5).setCellValue(progress.getCompletedFrames());
-    row.createCell(6).setCellValue(progress.getCompletedSashes());
-    row.createCell(7).setCellValue(progress.getOperation().name());
+    row.createCell(6).setCellValue(progress.getCompletedFrames());
+    row.createCell(7).setCellValue(progress.getCompletedSashes());
+    row.createCell(8).setCellValue(progress.getOperation().name());
     return rowIdx;
   }
 

@@ -11,6 +11,9 @@ import com.example.productiontracker.service.contract.ProductionProgressService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +31,11 @@ public class ProgressController {
 
   @GetMapping("/edit-progress/{itemId}")
   public String showProgressForm(@PathVariable Long itemId, Model model) {
-    model.addAttribute("orderItem", orderItemService.getOrderItemById(itemId));
-    model.addAttribute("operations", orderItemService.getAllOperations());
+    OrderItem orderItem = orderItemService.getOrderItemById(itemId)
+            .orElseThrow(() -> new RuntimeException("OrderItem not found with id " + itemId));
+    List<String> operations = orderItemService.getAllOperations();
+    model.addAttribute("orderItem", orderItem);
+    model.addAttribute("operations", operations);
     model.addAttribute("progress", new ProductionProgress());
     return "progress-form";
   }
