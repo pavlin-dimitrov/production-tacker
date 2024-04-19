@@ -3,13 +3,12 @@ package com.example.productiontracker.service.contract;
 import com.example.productiontracker.dto.FilterCriteria;
 import com.example.productiontracker.dto.OrderProgressInfo;
 import com.example.productiontracker.dto.ProductionProgressDto;
-import com.example.productiontracker.entity.OperationType;
+import com.example.productiontracker.enums.OperationType;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 @Service

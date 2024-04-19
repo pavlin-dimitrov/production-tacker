@@ -19,6 +19,8 @@ public class OrderNum extends Auditable<String> implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  private int productionWeek;
+  private int assemblyWeek;
   private String orderNumber;
   private String details;
   private String comment;

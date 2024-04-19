@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
@@ -21,6 +21,8 @@
     <table class="table table-striped table-hover">
         <thead class="thead-dark">
         <tr>
+            <th>П-во седмица</th>
+            <th>Монт. седмица</th>
             <th>Номер на поръчка</th>
             <th>Детайли за поръчка</th>
             <th>Коментар</th>
@@ -30,6 +32,8 @@
         </thead>
         <tbody>
         <tr th:each="orderNum : ${orderNums}">
+            <td th:text="${orderNum.productionWeek}">Производствена седмица</td>
+            <td th:text="${orderNum.assemblyWeek}">Монтажна седмица</td>
             <td th:text="${orderNum.orderNumber}">Номер на поръчка</td>
             <td th:text="${orderNum.details}">Детайли за поръчка</td>
             <td th:text="${orderNum.comment}">Коментар</td>
@@ -42,13 +46,16 @@
             </td>
             <td>
                 <a th:href="@{/progress/{id}(id=${orderNum.id})}" class="btn btn-primary btn-sm">-></a>
-                <a th:href="@{/editOrder/{id}(id=${orderNum.id})}" class="btn btn-info btn-sm">Edit Order</a>
-                <a th:href="@{/editItems/{id}(id=${orderNum.id})}" class="btn btn-info btn-sm">Edit Item</a>
-                <a th:href="@{/deleteOrder/{id}(id=${orderNum.id})}" class="btn btn-danger btn-sm">X</a>
+                <div th:if="${isAdmin}" style="display: inline;">
+                    <a th:href="@{/editOrder/{id}(id=${orderNum.id})}" class="btn btn-info btn-sm">Edit Order</a>
+                    <a th:href="@{/editItems/{id}(id=${orderNum.id})}" class="btn btn-info btn-sm">Edit Item</a>
+                    <a th:href="@{/deleteOrder/{id}(id=${orderNum.id})}" class="btn btn-danger btn-sm">X</a>
+                </div>
             </td>
         </tr>
         </tbody>
     </table>
+
     <!-- Pagination Controls -->
     <div>
         <ul class="pagination">
@@ -66,8 +73,9 @@
         </ul>
     </div>
 
-
-    <a th:href="@{/createOrder}" class="btn btn-success">Добави Поръчка</a>
+    <div th:if="${isAdmin}" style="display: inline;">
+        <a th:href="@{/createOrder}" class="btn btn-success">Добави Поръчка</a>
+    </div>
 </div>
 </body>
 </html>

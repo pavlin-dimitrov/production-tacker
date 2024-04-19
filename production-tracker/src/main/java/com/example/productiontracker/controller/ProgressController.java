@@ -3,7 +3,7 @@ package com.example.productiontracker.controller;
 import com.example.productiontracker.dto.FilterCriteria;
 import com.example.productiontracker.dto.OrderProgressInfo;
 import com.example.productiontracker.dto.ProductionProgressDto;
-import com.example.productiontracker.entity.OperationType;
+import com.example.productiontracker.enums.OperationType;
 import com.example.productiontracker.entity.OrderItem;
 import com.example.productiontracker.entity.ProductionProgress;
 import com.example.productiontracker.service.contract.OrderItemService;

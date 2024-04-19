@@ -1,8 +1,10 @@
 package com.example.productiontracker.entity;
 
+import com.example.productiontracker.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -24,9 +26,12 @@ public class Account implements UserDetails {
   private String username;
   private String password;
 
+  @Enumerated(EnumType.STRING)
+  private Role role;
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return Collections.emptyList();
+    return Collections.singletonList(new SimpleGrantedAuthority(role.authority()));
   }
 
   @Override

@@ -10,6 +10,19 @@
 <div class="container mt-5">
     <h2>Create New Order</h2>
     <form th:action="@{/saveOrder}" th:object="${order}" method="post">
+
+        <div class="form-group">
+            <label for="productionWeek">Production Week</label>
+            <input type="text" id="productionWeek" name="productionWeek" th:field="*{productionWeek}" class="form-control"
+                   placeholder="Production Week">
+        </div>
+
+        <div class="form-group">
+            <label for="assemblyWeek">Assembly Week</label>
+            <input type="text" id="assemblyWeek" name="assemblyWeek" th:field="*{assemblyWeek}" class="form-control"
+                   placeholder="Assembly Week">
+        </div>
+
         <div class="form-group">
             <label for="orderNumber">Order Number</label>
             <input type="text" id="orderNumber" name="orderNumber" th:field="*{orderNumber}" class="form-control"

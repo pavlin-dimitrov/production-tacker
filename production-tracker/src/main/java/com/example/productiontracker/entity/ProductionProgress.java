@@ -1,6 +1,7 @@
 package com.example.productiontracker.entity;
 
 import com.example.productiontracker.auditor.Auditable;
+import com.example.productiontracker.enums.OperationType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

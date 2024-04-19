@@ -1,4 +1,4 @@
-package com.example.productiontracker.entity;
+package com.example.productiontracker.enums;
 
 public enum OperationType {
   CUTTING,

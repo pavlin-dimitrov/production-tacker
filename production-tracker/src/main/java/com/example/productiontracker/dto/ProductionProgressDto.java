@@ -1,7 +1,7 @@
 package com.example.productiontracker.dto;
 
 import com.example.productiontracker.entity.ItemType;
-import com.example.productiontracker.entity.OperationType;
+import com.example.productiontracker.enums.OperationType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

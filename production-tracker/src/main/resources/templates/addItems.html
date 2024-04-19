@@ -40,11 +40,10 @@
 </div>
 <script>
     document.getElementById('finishOrderBtn').addEventListener('click', function() {
-        fetch('/finishOrder') // Извикване на метода finishOrder чрез AJAX заявка
+        fetch('/finishOrder')
             .then(function(response) {
-                // Проверка дали заявката е успешна
                 if (response.ok) {
-                    window.location.href = '/'; // Редиректване към началната страница
+                    window.location.href = '/';
                 } else {
                     alert('Нещо се обърка!');
                 }

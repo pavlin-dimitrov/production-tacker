@@ -68,6 +68,15 @@
         });
     }
 
+    $('form').submit(function(e) {
+        if ($('#completedFrames').val() === '') {
+            $('#completedFrames').val('0');
+        }
+        if ($('#completedSashes').val() === '') {
+            $('#completedSashes').val('0');
+        }
+    });
+
     function validateForm() {
         var operation = $('#operation').val();
         var completedFrames = $('#completedFrames').val();

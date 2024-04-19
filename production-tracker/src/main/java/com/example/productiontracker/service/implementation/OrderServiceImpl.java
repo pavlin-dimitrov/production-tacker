@@ -42,6 +42,8 @@ public class OrderServiceImpl implements OrderService {
         orderRepository
             .findById(id)
             .orElseThrow(() -> new RuntimeException("Order not found with id " + id));
+    orderNum.setProductionWeek(orderNumDetails.getProductionWeek());
+    orderNum.setAssemblyWeek(orderNumDetails.getAssemblyWeek());
     orderNum.setOrderNumber(orderNumDetails.getOrderNumber());
     orderNum.setDetails(orderNumDetails.getDetails());
     orderNum.setComment(orderNumDetails.getComment());

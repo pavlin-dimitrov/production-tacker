@@ -1,7 +1,7 @@
 package com.example.productiontracker.service.implementation;
 
 import com.example.productiontracker.dto.OrderItemDto;
-import com.example.productiontracker.entity.OperationType;
+import com.example.productiontracker.enums.OperationType;
 import com.example.productiontracker.entity.OrderNum;
 import com.example.productiontracker.exception.OrderNotFoundException;
 import com.example.productiontracker.repository.OrderRepository;
