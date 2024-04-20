@@ -24,45 +24,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 
-//  @Bean
-//  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//    http.csrf(csrf -> csrf.disable())
-//        .authorizeHttpRequests(
-//            auth ->
-//                auth.requestMatchers("/auth/register", "/login", "/public/**")
-//                    .permitAll()
-//                    // Operations restricted to ADMIN role
-//                    .requestMatchers(
-//                        "/createOrder",
-//                        "/saveOrder",
-//                        "/addItems",
-//                        "/finishOrder",
-//                        "/editOrder/**",
-//                        "/updateOrder/**",
-//                        "/editItems/**",
-//                        "/updateItems/**",
-//                        "/deleteItem/**",
-//                        "/deleteOrder/**")
-//                    .hasAuthority(Role.ADMIN.authority())
-//                    // ProgressController routes accessible to both USER and ADMIN
-//                    .requestMatchers(
-//                        "/edit-progress/**",
-//                        "/update-saveProgress/**",
-//                        "/getProgressInfo",
-//                        "/filter",
-//                        "/report",
-//                        "/export/excel")
-//                    .hasAnyAuthority(Role.ADMIN.authority(), Role.USER.authority())
-//                    .anyRequest()
-//                    .authenticated())
-//            .formLogin(withDefaults())
-//            .logout(
-//                    logout -> {
-//                        logout.logoutSuccessUrl("/login?logout").permitAll();
-//                    });
-//
-//    return http.build();
-//  }
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
@@ -98,7 +59,6 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                         public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
                             HttpSession session = request.getSession(false);
                             if (session != null) {
-                                // Използвайте директно името на атрибута, което Spring Security използва за съхранение на запазени заявки
                                 session.removeAttribute("SPRING_SECURITY_SAVED_REQUEST");
                             }
                         }

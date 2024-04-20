@@ -160,25 +160,45 @@ public class ProductionProgressServiceImpl implements ProductionProgressService 
     return sheet;
   }
 
+//  @Override
+//  public String createReportName(FilterCriteria filterCriteria) {
+//
+//    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+//    String formattedStartDate = filterCriteria.getStartDate().format(formatter);
+//    String formattedEndDate = filterCriteria.getEndDate().format(formatter);
+//
+//    return "Report - "
+//        + filterCriteria.getOrderNumber()
+//        + " - "
+//        + filterCriteria.getDetails()
+//        + " - "
+//        + filterCriteria.getLastModifiedBy()
+//        + " - "
+//        + formattedStartDate
+//        + " - "
+//        + formattedEndDate
+//        + ".xlsx";
+//  }
+
   @Override
   public String createReportName(FilterCriteria filterCriteria) {
-
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    String formattedStartDate = filterCriteria.getStartDate().format(formatter);
-    String formattedEndDate = filterCriteria.getEndDate().format(formatter);
+    String formattedStartDate = (filterCriteria.getStartDate() != null) ? filterCriteria.getStartDate().format(formatter) : "no-start-date";
+    String formattedEndDate = (filterCriteria.getEndDate() != null) ? filterCriteria.getEndDate().format(formatter) : "no-end-date";
 
     return "Report - "
-        + filterCriteria.getOrderNumber()
-        + " - "
-        + filterCriteria.getDetails()
-        + " - "
-        + filterCriteria.getLastModifiedBy()
-        + " - "
-        + formattedStartDate
-        + " - "
-        + formattedEndDate
-        + ".xlsx";
+            + (filterCriteria.getOrderNumber() != null ? filterCriteria.getOrderNumber() : "no-order-number")
+            + " - "
+            + (filterCriteria.getDetails() != null ? filterCriteria.getDetails() : "no-details")
+            + " - "
+            + (filterCriteria.getLastModifiedBy() != null ? filterCriteria.getLastModifiedBy() : "no-modifier")
+            + " - "
+            + formattedStartDate
+            + " - "
+            + formattedEndDate
+            + ".xlsx";
   }
+
 
   public Map<String, Integer> getProgressInfo(OperationType operation, Long itemId) {
 
