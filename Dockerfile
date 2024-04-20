@@ -1,5 +1,11 @@
-FROM amazoncorretto:17-alpine
+#FROM amazoncorretto:17-alpine
+#VOLUME /tmp
+#COPY /production-tracker/target/*.jar app.jar
+#ENTRYPOINT ["java","-jar","/app.jar"]
+#EXPOSE 8080
+
+FROM eclipse-temurin:17-jdk-alpine
 VOLUME /tmp
-COPY /production-tracker/target/*.jar app.jar
+COPY target/*.jar app.jar
 ENTRYPOINT ["java","-jar","/app.jar"]
 EXPOSE 8080
