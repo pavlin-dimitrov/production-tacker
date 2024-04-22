@@ -45,11 +45,13 @@
                 </ul>
             </td>
             <td>
-                <a th:href="@{/progress/{id}(id=${orderNum.id})}" class="btn btn-primary btn-sm">-></a>
-                <div th:if="${isAdmin}" style="display: inline;">
-                    <a th:href="@{/editOrder/{id}(id=${orderNum.id})}" class="btn btn-info btn-sm">Edit Order</a>
-                    <a th:href="@{/editItems/{id}(id=${orderNum.id})}" class="btn btn-info btn-sm">Edit Item</a>
-                    <a th:href="@{/deleteOrder/{id}(id=${orderNum.id})}" class="btn btn-danger btn-sm">X</a>
+                <div style="display: flex; flex-direction: column; align-items: stretch;">
+                    <a th:href="@{/progress/{id}(id=${orderNum.id})}" class="btn btn-primary btn-sm" style="width: 100%;">Progress</a>
+                    <div th:if="${isAdmin}" style="width: 100%;">
+                        <a th:href="@{/editOrder/{id}(id=${orderNum.id})}" class="btn btn-info btn-sm" style="width: 100%;">Edit Order</a>
+                        <a th:href="@{/editItems/{id}(id=${orderNum.id})}" class="btn btn-info btn-sm" style="width: 100%;">Edit Item</a>
+                        <a th:href="@{/deleteOrder/{id}(id=${orderNum.id})}" class="btn btn-danger btn-sm" style="width: 100%;">Delete</a>
+                    </div>
                 </div>
             </td>
         </tr>
