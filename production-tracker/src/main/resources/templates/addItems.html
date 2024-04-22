@@ -15,16 +15,16 @@
         <div id="itemsContainer">
             <div class="item mb-3">
                 <div class="form-group">
-                    <label>Item Type</label>
-                    <select name="type" class="form-control">
+                    <label for="type">Item Type</label>
+                    <select id="type" name="type" class="form-control">
                         <option th:each="type : ${T(com.example.productiontracker.entity.ItemType).values()}"
                                 th:value="${type}" th:text="${type}"
                                 th:unless="${addedItems.contains(type.toString())}"></option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Quantity</label>
-                    <input type="number" name="quantity" class="form-control" placeholder="Enter Quantity">
+                    <label for="quantity">Quantity</label>
+                    <input id="quantity" type="number" name="quantity" class="form-control" placeholder="Enter Quantity">
                 </div>
             </div>
         </div>
@@ -40,15 +40,30 @@
 </div>
 <script>
     document.getElementById('finishOrderBtn').addEventListener('click', function() {
-        fetch('/finishOrder')
-            .then(function(response) {
-                if (response.ok) {
-                    window.location.href = '/';
-                } else {
-                    alert('Нещо се обърка!');
-                }
-            });
-    });
+    fetch('/finishOrder')
+        .then(function(response) {
+            console.log(response); // Log the response to see what's received
+            if (response.ok) {
+                window.location.href = '/';
+            } else {
+                alert('Нещо се обърка!');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Нещо се обърка!');
+        });
+});
+<!--    document.getElementById('finishOrderBtn').addEventListener('click', function() {-->
+<!--        fetch('/finishOrder')-->
+<!--            .then(function(response) {-->
+<!--                if (response.ok) {-->
+<!--                    window.location.href = '/';-->
+<!--                } else {-->
+<!--                    alert('Нещо се обърка!');-->
+<!--                }-->
+<!--            });-->
+<!--    });-->
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
